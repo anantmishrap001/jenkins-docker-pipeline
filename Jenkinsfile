@@ -12,22 +12,28 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                sh 'pytest app/test_app.py'
+                sh '''
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                    pytest app/test_app.py
+                '''
             }
         }
 
         stage('Dockerize') {
+            when {
+                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
+            }
             steps {
                 echo 'Building Docker image...'
-                sh 'docker build -t demo-app:latest .'
+                sh 'docker build -t jenkins-pipeline-demo .'
             }
         }
 
         stage('Deploy') {
-            steps {
-                echo 'Deploying application (simulated)...'
-                sh 'echo "App deployed successfully!"'
+            when {
+                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
             }
-        }
-    }
-}
+            steps {
+                echo 'Deploying Docker container...'
+                sh 'docker run -d -
