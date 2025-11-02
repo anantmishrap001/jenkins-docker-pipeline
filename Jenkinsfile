@@ -36,4 +36,8 @@ pipeline {
             }
             steps {
                 echo 'Deploying Docker container...'
-                sh 'docker run -d -
+                sh 'docker run -d -p 5000:5000 jenkins-pipeline-demo'
+            }
+        }
+    }
+}
